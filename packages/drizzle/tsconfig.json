@@ -1,0 +1,13 @@
+{
+  "extends": "@packages/typescript-config/base.json",
+  "compilerOptions": {
+    "lib": ["ES2015"],
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src/**/*", "../../packages/libs/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

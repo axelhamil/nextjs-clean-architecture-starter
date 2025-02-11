@@ -1,0 +1,32 @@
+{
+  "name": "nextjs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "format": "biome format . --write",
+    "lint": "biome check .",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@packages/libs": "workspace:*",
+    "@tailwindcss/postcss": "^4.0.6",
+    "next": "^15.1.7",
+    "nuqs": "^2.3.2",
+    "postcss": "^8.5.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.6",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@packages/typescript-config": "workspace:*",
+    "@types/node": "^22",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "typescript": "^5.7.3"
+  }
+}
