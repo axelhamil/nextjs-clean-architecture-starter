@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "incremental": true,
+    "noEmit": true,
+    "declaration": true,
+    "declarationMap": true,
+    "allowJs": true,
+    "moduleDetection": "force",
+    "noUncheckedIndexedAccess": true,
+    "target": "ES2022"
+  }
+}

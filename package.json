@@ -1,0 +1,28 @@
+{
+  "name": "ts-monorepo-boilerplate",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "pnpm db && turbo dev",
+    "db": "docker compose up -d postgres",
+    "db:migrate": "turbo db:migrate",
+    "db:generate": "turbo db:generate",
+    "db:push": "turbo db:push",
+    "db:studio": "turbo db:studio",
+    "lint": "biome check .",
+    "format": "biome format . --write",
+    "clean": "turbo clean && rm -rf node_modules",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "husky": "^9.1.7",
+    "turbo": "latest"
+  },
+  "packageManager": "pnpm@10.4.1",
+  "engines": {
+    "node": ">=22.14.0"
+  }
+}
