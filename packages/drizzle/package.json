@@ -17,7 +17,7 @@
     "@packages/libs": "workspace:*",
     "drizzle-orm": "^0.39.3",
     "dotenv": "^16.4.5",
-    "postgres": "^3.4.5"
+    "pg": "^8.14.0"
   },
   "devDependencies": {
     "@packages/typescript-config": "workspace:*",

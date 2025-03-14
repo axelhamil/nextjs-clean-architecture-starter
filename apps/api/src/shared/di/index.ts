@@ -1,5 +1,6 @@
 import { env } from "@shared/env";
 import { Container } from "inversify";
+import { DatabaseModule } from "./modules/database.module";
 import { type DI_RETURN_TYPES, DI_SYMBOLS } from "./types";
 
 export const SESSION_COOKIE = "session";
@@ -9,15 +10,11 @@ const ApplicationContainer = new Container({
 });
 
 export const initializeContainer = (): void => {
-  // ApplicationContainer.load(TodoModule);
-  // ApplicationContainer.load(UserModule);
-  // ApplicationContainer.load(AuthModule);
+  ApplicationContainer.load(DatabaseModule);
 };
 
 export const destroyContainer = (): void => {
-  // ApplicationContainer.unload(TodoModule);
-  // ApplicationContainer.unload(UserModule);
-  // ApplicationContainer.unload(AuthModule);
+  ApplicationContainer.unload(DatabaseModule);
 };
 
 if (env.NODE_ENV !== "test") {
