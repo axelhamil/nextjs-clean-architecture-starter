@@ -4,6 +4,10 @@
   "private": true,
   "main": "./index.ts",
   "types": "./index.ts",
+  "scripts": {
+    "lint": "biome check .",
+    "format": "biome format . --write"
+  },
   "dependencies": {
     "date-fns": "^4.1.0",
     "decimal.js": "^10.5.0",

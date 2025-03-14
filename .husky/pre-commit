@@ -84,6 +84,12 @@ run_command "pnpm format" "$TIMESTAMP" \
     "Code formatting is valid" \
     "Code formatting failed" || exit 1
 
+# Lint check
+print_section "Checking code lint"
+run_command "pnpm lint" "$TIMESTAMP" \
+    "Code lint is valid" \
+    "Code lint failed" || exit 1
+
 # Type check (quick, only staged files)
 print_section "Type checking"
 run_command "pnpm type-check" "$TIMESTAMP" \
