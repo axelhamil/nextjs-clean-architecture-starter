@@ -9,6 +9,9 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
 
+BIOME_WARNINGS=0
+WARNING_COUNT=0
+
 # Utility functions
 print_header() {
     echo "\n${BOLD}${BLUE}════════════════════════════════════════════${NC}"
@@ -26,23 +29,27 @@ print_success() {
 
 print_error() {
     echo "${RED}✕ $1${NC}\n"
-    echo "${RED}Command output:${NC}\n$2"
+    echo "${RED}Command output:${NC}\n$2\n"
 }
 
 print_warning() {
-    echo "${YELLOW}⚠ $1${NC}"
+    echo "\n${YELLOW}${BOLD}⚠ $1${NC}\n"
 }
 
 print_footer() {
+    echo "\n${BOLD}════════════════════════════════════════════${NC}"
     if [ $1 -eq 0 ]; then
-        echo "\n${BOLD}${GREEN}════════════════════════════════════════════${NC}"
-        echo "${BOLD}${GREEN}   ✅ ALL PRE-COMMIT CHECKS PASSED${NC}"
-        echo "${BOLD}${GREEN}════════════════════════════════════════════${NC}\n"
+        if [ $BIOME_WARNINGS -eq 1 ]; then
+            echo "${BOLD}${YELLOW}⚠ ALL PRE-COMMIT CHECKS PASSED WITH WARNINGS${NC}"
+            echo "${YELLOW}   $WARNING_COUNT Biome warnings detected. Consider fixing them.${NC}"
+        else
+            echo "${BOLD}${GREEN}✅ ALL PRE-COMMIT CHECKS PASSED${NC}"
+        fi
     else
-        echo "\n${BOLD}${RED}════════════════════════════════════════════${NC}"
-        echo "${BOLD}${RED}   ❌ PRE-COMMIT CHECKS FAILED${NC}"
-        echo "${BOLD}${RED}════════════════════════════════════════════${NC}\n"
+        echo "${BOLD}${RED}❌ PRE-COMMIT CHECKS FAILED${NC}"
+        exit 1
     fi
+    echo "${BOLD}════════════════════════════════════════════${NC}\n"
 }
 
 # Function to run command and capture output
@@ -50,50 +57,62 @@ run_command() {
     local command_output
     command_output=$($1 2>&1)
     local exit_code=$?
-    
+
     if [ $exit_code -eq 0 ]; then
-        print_success "[$2] $3"
+        print_success "$2"
         return 0
     else
-        print_error "[$2] $4" "$command_output"
+        print_error "$3" "$command_output"
         print_footer 1
-        return 1
+        exit 1
+    fi
+}
+
+# Function to run lint and handle warnings
+run_lint_command() {
+    local command_output
+    command_output=$(pnpm lint 2>&1)
+    local exit_code=$?
+
+    if echo "$command_output" | grep -q "error"; then
+        print_error "Code lint failed" "$command_output"
+        print_footer 1
+        exit 1
+    elif echo "$command_output" | grep -qE "Found [0-9]+ warning"; then
+        BIOME_WARNINGS=1
+        WARNING_COUNT=$(echo "$command_output" | grep -oE "Found [0-9]+ warning" | awk '{print $2}')
+        print_warning "Code lint has warnings: $WARNING_COUNT detected."
+        echo "$command_output"
+        return 0
+    else
+        print_success "Code lint is valid"
+        return 0
     fi
 }
 
 # Start script
 print_header
 
-# Get current timestamp
-TIMESTAMP=$(date '+%H:%M:%S')
-
 # Get staged files
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx)$' | tr '\n' ' ')
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.ts\|\.tsx\|\.js\|\.jsx\|\.json\|\.md\|\.css\|\.scss\|\.html\|\.yml\|\.yaml$' || true)
 
 if [ -z "$STAGED_FILES" ]; then
-    print_warning "[$TIMESTAMP] No relevant files to check"
+    print_warning "No relevant files staged for commit. Skipping checks."
     print_footer 0
     exit 0
 fi
 
-print_warning "[$TIMESTAMP] Found staged files to check"
-
 # Format check
 print_section "Checking code format"
-run_command "pnpm format" "$TIMESTAMP" \
-    "Code formatting is valid" \
-    "Code formatting failed" || exit 1
+run_command "pnpm format" "Code formatting is valid" "Code formatting failed"
 
-# Lint check
+# Lint check with Biome warnings handled
 print_section "Checking code lint"
-run_command "pnpm lint" "$TIMESTAMP" \
-    "Code lint is valid" \
-    "Code lint failed" || exit 1
+run_lint_command
 
-# Type check (quick, only staged files)
-print_section "Type checking"
-run_command "pnpm type-check" "$TIMESTAMP" \
-    "Types are valid" \
-    "Type check failed" || exit 1
+# Type checking
+print_section "Checking types"
+run_command "pnpm type-check" "Types are valid" "Type check failed"
 
-print_footer 0 
+print_footer 0
+exit 0

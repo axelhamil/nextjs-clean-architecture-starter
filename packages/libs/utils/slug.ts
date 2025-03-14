@@ -9,7 +9,7 @@ export type SlugifyOptions = {
   trim?: boolean;
 };
 
-export const createSlug = (value: string, options?: SlugifyOptions) => {
+export const createSlug = (value: string, options?: SlugifyOptions): string => {
   return slugify(value, {
     lower: true,
     strict: true,
