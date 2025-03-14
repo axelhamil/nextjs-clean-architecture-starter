@@ -69,36 +69,24 @@ BRANCH_NAME=$(git symbolic-ref --short HEAD)
 TIMESTAMP=$(date '+%H:%M:%S')
 PROTECTED_BRANCHES="^(main|master|develop|staging|prod)$"
 
-if echo "$BRANCH_NAME" | grep -qE "$PROTECTED_BRANCHES"; then
-    print_warning "[$TIMESTAMP] Protected branch detected: '$BRANCH_NAME'"
-    print_warning "Running comprehensive checks...\n"
-    
-    # Type checking
-    print_section "Type checking"
-    run_command "pnpm type-check" "$TIMESTAMP" \
-        "Types are valid" \
-        "Type check failed" || exit 1
+print_warning "[$TIMESTAMP] Running all checks...\n"
 
-    # Testing
-    print_section "Running tests"
-    run_command "pnpm test" "$TIMESTAMP" \
-        "All tests passed" \
-        "Tests failed" || exit 1
+# Type checking
+print_section "Type checking"
+run_command "pnpm type-check" "$TIMESTAMP" \
+    "Types are valid" \
+    "Type check failed" || exit 1
 
-    # Building
-    print_section "Building project"
-    run_command "pnpm build" "$TIMESTAMP" \
-        "Build completed" \
-        "Build failed" || exit 1
-else
-    print_warning "[$TIMESTAMP] Feature branch detected: '$BRANCH_NAME'"
-    print_warning "Running basic checks...\n"
-    
-    # Type checking only for feature branches
-    print_section "Type checking"
-    run_command "pnpm type-check" "$TIMESTAMP" \
-        "Types are valid" \
-        "Type check failed" || exit 1
-fi
+# Testing
+print_section "Running tests"
+run_command "pnpm test" "$TIMESTAMP" \
+    "All tests passed" \
+    "Tests failed" || exit 1
+
+# Building
+print_section "Building project"
+run_command "pnpm build" "$TIMESTAMP" \
+    "Build completed" \
+    "Build failed" || exit 1
 
 print_footer 0 
