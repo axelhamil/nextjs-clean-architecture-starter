@@ -52,7 +52,12 @@ export default async function Home(): Promise<ReactNode> {
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="h-12 w-12 rounded-full bg-blue-500 flex items-center justify-center">
-                <span className="text-xl text-white">{user.name}</span>
+                <span className="text-xl text-white">
+                  {user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </span>
               </div>
               <div>
                 <h3 className="font-medium">{user.name}</h3>

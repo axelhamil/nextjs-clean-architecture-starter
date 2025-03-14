@@ -4,7 +4,7 @@ import { z } from "zod";
 const envSchema = z.object({
   CORS_ORIGIN: z.string(),
   DATABASE_URL: z.string(),
-  NODE_ENV: z.string().default("development"),
+  NODE_ENV: z.string(),
   PORT: z.string().default("3000"),
 });
 
