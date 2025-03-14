@@ -8,8 +8,7 @@
     "rules": {
       "recommended": true,
       "nursery": {
-        "useExplicitType": "warn",
-        "noSecrets": "warn"
+        "useExplicitType": "warn"
       },
       "correctness": {
         "noUnusedVariables": "error",
