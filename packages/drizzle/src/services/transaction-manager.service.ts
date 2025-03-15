@@ -1,8 +1,6 @@
-import { injectable } from "inversify";
 import { type Transaction, db } from "../config";
 import type { ITransactionManagerService } from "./transaction-manager.type";
 
-@injectable()
 export class TransactionService implements ITransactionManagerService {
   public async startTransaction<T>(
     callback: (trx: Transaction) => Promise<T>,
