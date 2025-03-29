@@ -3,8 +3,6 @@ import { Container } from "inversify";
 import { DatabaseModule } from "./modules/database.module";
 import { type DI_RETURN_TYPES, DI_SYMBOLS } from "./types";
 
-export const SESSION_COOKIE = "session";
-
 const ApplicationContainer = new Container({
   defaultScope: "Singleton",
 });

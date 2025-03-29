@@ -11,6 +11,7 @@ NC='\033[0m' # No Color
 
 BIOME_WARNINGS=0
 WARNING_COUNT=0
+FILES_FORMATTED=0
 
 # Utility functions
 print_header() {
@@ -102,9 +103,17 @@ if [ -z "$STAGED_FILES" ]; then
     exit 0
 fi
 
-# Format check
+# Format check and auto-commit if files were formatted
 print_section "Checking code format"
-run_command "pnpm format" "Code formatting is valid" "Code formatting failed"
+pnpm format
+if [ -n "$(git diff --name-only)" ]; then
+    FILES_FORMATTED=1
+    git add .
+    git commit --amend --no-edit
+    print_success "Code formatted and changes amended to commit"
+else
+    print_success "Code formatting is valid"
+fi
 
 # Lint check with Biome warnings handled
 print_section "Checking code lint"
