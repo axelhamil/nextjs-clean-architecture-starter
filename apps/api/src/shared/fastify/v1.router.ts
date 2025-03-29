@@ -3,8 +3,8 @@ import type { FastifyInstance } from "fastify";
 // declare module "fastify" {
 //   export interface FastifyRequest {
 //     user: {
-//       clientId: string;
 //       userId: string;
+//       email: string;
 //     };
 //   }
 // }

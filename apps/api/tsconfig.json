@@ -2,6 +2,10 @@
   "extends": "@packages/typescript-config/node.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ESNext"],
+    "strict": true,
     "paths": {
       "@/*": ["src/*"],
       "@shared/*": ["src/shared/*"],
