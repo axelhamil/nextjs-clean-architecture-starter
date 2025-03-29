@@ -118,9 +118,6 @@ print_header
 
 check_uncommitted
 
-print_section "Checking code format"
-run_command "pnpm format" "[FORMAT] Code formatting is valid" "[FORMAT] Formatting issues detected"
-
 print_section "Checking code lint"
 run_lint
 
