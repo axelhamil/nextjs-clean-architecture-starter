@@ -3,6 +3,9 @@
   "compilerOptions": {
     "outDir": "./dist",
     "sourceRoot": "/",
+    "module": "NodeNext",
+    "lib": ["ESNext"],
+    "moduleResolution": "NodeNext",
     "sourceMap": true,
     "noEmit": false,
     "removeComments": true,

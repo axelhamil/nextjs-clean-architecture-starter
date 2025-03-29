@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "dev": "pnpm db && turbo dev",
+    "dev": "turbo dev",
     "db": "docker compose up -d postgres",
     "db:migrate": "turbo db:migrate",
     "db:generate": "turbo db:generate",
