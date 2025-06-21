@@ -1,4 +1,4 @@
-import { type Transaction, db } from "../config";
+import { db, type Transaction } from "../config";
 import type { ITransactionManagerService } from "./transaction-manager.type";
 
 export class TransactionService implements ITransactionManagerService {

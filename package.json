@@ -9,20 +9,24 @@
     "db:generate": "turbo db:generate",
     "db:push": "turbo db:push",
     "db:studio": "turbo db:studio",
-    "lint": "biome check .",
+    "ui:add": "turbo ui:add",
     "format": "biome format . --write",
+    "lint": "biome lint .",
+    "check": "biome check .",
+    "fix": "biome check --write .",
+    "ci:check": "biome ci .",
     "clean": "turbo clean && rm -rf node_modules",
     "type-check": "turbo type-check",
     "test": "turbo test",
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "^2.0.4",
     "husky": "^9.1.7",
-    "turbo": "^2.5.3"
+    "turbo": "latest"
   },
-  "packageManager": "pnpm@10.6.3",
+  "packageManager": "pnpm@10.12.1",
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=22.16.0"
   }
 }
