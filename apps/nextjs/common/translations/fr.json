@@ -1,0 +1,33 @@
+{
+  "home": {
+    "hero": {
+      "badge": "✨ Boilerplate Next-Gen",
+      "title": "Le Boilerplate <span_primary>Monorepo</span_primary> Next.js Ultime",
+      "subtitle": "Lancez votre application full-stack en quelques minutes avec notre boilerplate prêt pour la production, doté d'une architecture propre et évolutive.",
+      "cta": "Commencer",
+      "demo": "Voir sur GitHub",
+      "features_title": "Avec le meilleur du développement web moderne :"
+    },
+    "features": {
+      "title": "Pourquoi nous choisir ?",
+      "subtitle": "Une architecture moderne et des outils de pointe pour vos projets",
+      "performance": {
+        "title": "Performance",
+        "description": "Optimisations automatiques et chargement ultra-rapide"
+      },
+      "maintainability": {
+        "title": "Maintenabilité",
+        "description": "Code propre et architecture modulaire"
+      },
+      "scalability": {
+        "title": "Scalabilité",
+        "description": "Prêt pour la croissance de votre application"
+      }
+    },
+    "cta": {
+      "title": "Prêt à commencer ?",
+      "subtitle": "Rejoignez des milliers de développeurs qui font confiance à notre plateforme",
+      "button": "Commencer gratuitement"
+    }
+  }
+}

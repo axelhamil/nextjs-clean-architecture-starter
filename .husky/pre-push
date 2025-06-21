@@ -74,42 +74,29 @@ run_command() {
     fi
 }
 
-# Lint check
-run_lint() {
-    echo "${CYAN}Running lint check with Biome...${NC}"
+# Lint check -> now a full check
+run_check() {
+    echo "${CYAN}Running comprehensive check with Biome...${NC}"
     
-    # Run the lint command directly to ensure proper output
-    pnpm lint
-    local exit_code=$?
-    
-    # Capture the lint output for analysis
-    local output
-    output=$(pnpm lint 2>&1)
+    local exit_code
+    if [ $IS_PROTECTED -eq 1 ]; then
+        echo "${YELLOW}Protected branch detected. Enforcing stricter checks (--error-on-warnings).${NC}"
+        pnpm biome check . --error-on-warnings
+        exit_code=$?
+    else
+        pnpm check
+        exit_code=$?
+    fi
     
     if [ $exit_code -ne 0 ]; then
         echo "\n${RED}────────────────────────────────────────${NC}"
-        echo "${RED}${BOLD}[LINT] Errors detected. Fix them before pushing:${NC}"
+        echo "${RED}${BOLD}[BIOME] Check failed. Please fix the errors above before pushing.${NC}"
         echo "${RED}────────────────────────────────────────${NC}"
-        echo "$output\n"
+        # Biome already printed the errors, so we just exit.
         print_footer 1
         exit 1
-    elif echo "$output" | grep -qE "Found [0-9]+ warning"; then
-        BIOME_WARNINGS=1
-        if [ $IS_PROTECTED -eq 1 ]; then
-            echo "\n${RED}────────────────────────────────────────${NC}"
-            echo "${RED}${BOLD}[LINT] Warnings are not allowed on protected branches${NC}"
-            echo "${RED}────────────────────────────────────────${NC}"
-            echo "$output\n"
-            print_footer 1
-            exit 1
-        else
-            echo "\n${YELLOW}────────────────────────────────────────${NC}"
-            echo "${YELLOW}${BOLD}⚠ [LINT] Warnings detected:${NC}"
-            echo "${YELLOW}────────────────────────────────────────${NC}"
-            echo "$output"
-        fi
     else
-        print_success "[LINT] No issues found"
+        print_success "[BIOME] No issues found"
     fi
 }
 
@@ -169,8 +156,8 @@ print_header
 
 check_uncommitted
 
-print_section "Checking code lint"
-run_lint
+print_section "Checking code quality"
+run_check
 
 print_section "Checking types"
 echo "${CYAN}Running type check...${NC}"

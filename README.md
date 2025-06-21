@@ -1,50 +1,35 @@
-# 🚀 Modern TypeScript Monorepo Boilerplate
+# 🚀 Full-Stack Next.js Monorepo Boilerplate
 
-> A production-ready monorepo boilerplate using modern TypeScript stack with a focus on Developer Experience and best practices.
+> A production-ready, full-stack monorepo boilerplate featuring Next.js, Drizzle ORM, and a modern TypeScript stack. It's designed to be a starting point for your own applications, with a focus on Developer Experience and best practices.
 
 ## ✨ Features
 
-### 🏗️ Architecture
-
 - **Monorepo Structure** powered by Turborepo and PNPM Workspaces
+- **Full-Stack Next.js 15** with App Router, Server Components, and Route Handlers
 - **Type Safety** across all packages and apps with shared TypeScript configurations
 - **Modern Development Tools** including Biome for linting and formatting
 - **Containerized Development** with Docker and Docker Compose
-
-### 🛠️ Frontend Stack
-
-- **Multiple Frontend Apps**:
-  - **Next.js 15** app with App Router and Server Components
-  - **React 19** app with Vite for lighter applications
-- **Modern Styling**:
-  - **Tailwind CSS 4** with animations
-- **Type-Safe State Management** with `nuqs` for URL state and Zustand
-
-### ⚙️ Backend & Infrastructure
-
-- **Fastify 5** for high-performance API with TypeScript
-- **Drizzle ORM** for type-safe database operations
-- **PostgreSQL** database with Docker setup
-- **Dependency Injection** with InversifyJS
+- **Modern Styling** with Tailwind CSS 4 and shadcn/ui
+- **Type-Safe Database** with Drizzle ORM and PostgreSQL
+- **Dependency Injection** with a lightweight container
 
 ## 📦 Project Structure
 
 ```
 .
 ├── apps/
-│   ├── api/          # Fastify Backend API
-│   ├── nextjs/       # Next.js Frontend Application
-│   └── reactjs/      # React + Vite Frontend Application
+│   └── nextjs/       # Full-Stack Next.js Application
 ├── packages/
 │   ├── drizzle/      # Database schema and migrations
 │   ├── libs/         # Shared utilities and types
+│   ├── ui/           # Shared UI components from shadcn/ui
 │   └── typescript-config/ # Shared TypeScript configurations
 ```
 
 ## 🛠️ Prerequisites
 
-- Node.js (version 22.14.0 or later)
-- PNPM package manager (10.6.3 or later)
+- Node.js (version 22.16.0 or later)
+- PNPM package manager (10.12.1 or later)
 - Docker and Docker Compose
 - PostgreSQL (via Docker)
 
@@ -69,8 +54,6 @@ pnpm dev
 | Service | URL                                              |
 | ------- | ------------------------------------------------ |
 | Next.js | [`http://localhost:3000`](http://localhost:3000) |
-| React   | [`http://localhost:5173`](http://localhost:5173) |
-| API     | [`http://localhost:8080`](http://localhost:8080) |
 
 ## 🏗️ Development
 
@@ -92,25 +75,17 @@ pnpm test       # Run tests
 
 ## 📚 Tech Stack
 
-### 🎨 Frontend
+### Main Stack
 
 ![Next.js](https://img.shields.io/badge/Next.js_15-black?style=flat-square&logo=next.js)
 ![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript_5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript_5.8-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
-![Zustand](https://img.shields.io/badge/Zustand_5-624DE3?style=flat-square)
-![Nuqs](https://img.shields.io/badge/Nuqs_2-4353FF?style=flat-square)
-![TanStack Query](https://img.shields.io/badge/TanStack_Query_5-FF4154?style=flat-square&logo=react-query&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite_6-646CFF?style=flat-square&logo=vite&logoColor=white)
-
-### 🔧 Backend
-
-![Fastify](https://img.shields.io/badge/Fastify_5-202020?style=flat-square&logo=fastify)
-![TypeScript](https://img.shields.io/badge/TypeScript_5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
 ![Drizzle](https://img.shields.io/badge/Drizzle_ORM-C5F74F?style=flat-square&logoColor=black)
-![InversifyJS](https://img.shields.io/badge/InversifyJS_6-1F0954?style=flat-square)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000000?style=flat-square)
 ![Zod](https://img.shields.io/badge/Zod_3-3068B7?style=flat-square)
+![Nuqs](https://img.shields.io/badge/Nuqs_2-4353FF?style=flat-square)
 
 ### ⚡ Development
 
@@ -122,12 +97,11 @@ pnpm test       # Run tests
 
 ### 🔄 Utilities
 
-![date-fns](https://img.shields.io/badge/date--fns_4-770C56?style=flat-square)
-![decimal.js](https://img.shields.io/badge/decimal.js-41BDF5?style=flat-square)
 ![Remeda](https://img.shields.io/badge/Remeda-2C5BB4?style=flat-square)
-![UUID](https://img.shields.io/badge/UUID_11-338BA8?style=flat-square)
 ![Slugify](https://img.shields.io/badge/Slugify-4C4A73?style=flat-square)
 
 ## 📝 License
 
 MIT
+
+Created by [@axelhamil](https://github.com/axelhamil)

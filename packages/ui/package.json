@@ -1,0 +1,49 @@
+{
+  "name": "@packages/ui",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "ui": "pnpm dlx shadcn@latest",
+    "format": "biome format . --write",
+    "lint": "biome lint .",
+    "check": "biome check .",
+    "fix": "biome check --write .",
+    "ui:add": "pnpm dlx shadcn@latest add"
+  },
+  "exports": {
+    "./globals.css": "./src/styles/globals.css",
+    "./postcss.config": "./postcss.config.mjs",
+    "./tailwind.config": "./tailwind.config.ts",
+    "./libs/*": "./src/libs/*",
+    "./hooks/*": [
+      "./src/hooks/*.ts",
+      "./src/hooks/*.tsx"
+    ],
+    "./components/*": "./src/components/*.tsx",
+    "./components/ui/*": "./src/components/ui/*.tsx",
+    "./index": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-dom": "^19",
+    "@packages/libs": "workspace:*"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
+    "@radix-ui/react-slot": "^1.2.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.511.0",
+    "next-themes": "^0.4.6",
+    "react-hook-form": "^7.57.0",
+    "sonner": "^2.0.5",
+    "tailwind-merge": "^3.3.0",
+    "tw-animate-css": "^1.3.2"
+  },
+  "devDependencies": {
+    "@packages/typescript-config": "workspace:*",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,31 +1,35 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "organizeImports": {
-    "enabled": true
+  "$schema": "https://biomejs.dev/schemas/2.0.4/schema.json",
+  "root": true,
+  "assist": {
+    "actions": {
+      "source": { "organizeImports": "on" }
+    }
   },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "nursery": {
-        "useExplicitType": "warn"
+        "noImportCycles": "error"
       },
       "correctness": {
         "noUnusedVariables": "error",
         "noUndeclaredVariables": "error",
         "useExhaustiveDependencies": "warn",
         "noUnusedImports": "error",
-        "noUnreachable": "warn"
+        "noUnreachable": "warn",
+        "noSwitchDeclarations": "warn"
       },
       "suspicious": {
         "noExplicitAny": "warn",
-        "noConsoleLog": "warn",
         "noEmptyInterface": "warn",
         "noRedundantUseStrict": "warn",
         "noAssignInExpressions": "warn",
         "noDoubleEquals": "warn",
         "noPrototypeBuiltins": "warn",
-        "noConstEnum": "off"
+        "noConstEnum": "off",
+        "noConsole": { "level": "warn", "options": { "allow": ["log"] } }
       },
       "style": {
         "noNonNullAssertion": "warn",
@@ -34,9 +38,20 @@
         "useImportType": "warn",
         "useExportType": "warn",
         "noParameterAssign": "warn",
-        "useShorthandArrayType": "warn",
         "useShorthandAssign": "warn",
-        "useSingleCaseStatement": "warn"
+        "useAsConstAssertion": "error",
+        "useDefaultParameterLast": "error",
+        "useEnumInitializers": "error",
+        "useSelfClosingElements": "error",
+        "useSingleVarDeclarator": "error",
+        "noUnusedTemplateLiteral": "error",
+        "useNumberNamespace": "error",
+        "noInferrableTypes": "error",
+        "noUselessElse": "error",
+        "useConsistentArrayType": {
+          "level": "warn",
+          "options": { "syntax": "shorthand" }
+        }
       },
       "complexity": {
         "noForEach": "off",
@@ -48,7 +63,8 @@
       },
       "security": {
         "noDangerouslySetInnerHtml": "warn",
-        "noDangerouslySetInnerHtmlWithChildren": "error"
+        "noDangerouslySetInnerHtmlWithChildren": "error",
+        "noBlankTarget": "warn"
       },
       "performance": {
         "noDelete": "off",
@@ -69,7 +85,6 @@
         "useAnchorContent": "warn",
         "noSvgWithoutTitle": "warn",
         "noAutofocus": "off",
-        "noBlankTarget": "warn",
         "useHeadingContent": "warn"
       }
     }
@@ -81,7 +96,13 @@
     "indentWidth": 2,
     "lineWidth": 80,
     "lineEnding": "lf",
-    "ignore": ["**/node_modules/**", "**/.next/**", "**/dist/**", "**/build/**"]
+    "includes": [
+      "**",
+      "!**/node_modules/**",
+      "!**/.next/**",
+      "!**/dist/**",
+      "!**/build/**"
+    ]
   },
   "javascript": {
     "formatter": {

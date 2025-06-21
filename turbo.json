@@ -51,6 +51,10 @@
     "db:migrate": {
       "cache": false,
       "outputs": ["drizzle/migrations/**"]
+    },
+    "ui:add": {
+      "cache": false,
+      "interactive": true
     }
   }
 }
