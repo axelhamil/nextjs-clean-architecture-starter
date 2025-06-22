@@ -1,12 +1,15 @@
 {
   "extends": "@packages/typescript-config/base.json",
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "baseUrl": ".",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "noEmit": false,
+    "declaration": true
   },
-  "include": ["src/**/*", "../../packages/libs/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
