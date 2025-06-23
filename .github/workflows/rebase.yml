@@ -25,6 +25,10 @@ jobs:
 
       - name: Rebase and push
         run: |
-          git checkout develop
-          git rebase origin/main
-          git push origin develop --force-with-lease 
+          if git show-ref --verify --quiet refs/remotes/origin/develop; then
+            git checkout develop
+            git rebase origin/main
+            git push origin develop --force-with-lease
+          else
+            echo "Branch develop does not exist, skipping rebase"
+          fi

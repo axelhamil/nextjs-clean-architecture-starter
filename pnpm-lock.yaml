@@ -23,6 +23,9 @@ importers:
       '@evyweb/ioctopus':
         specifier: ^1.2.0
         version: 1.2.0
+      '@packages/ddd-kit':
+        specifier: workspace:*
+        version: link:../../packages/ddd-kit
       '@packages/drizzle':
         specifier: workspace:*
         version: link:../../packages/drizzle
@@ -72,6 +75,15 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.6
         version: 19.1.6(@types/react@19.1.8)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/ddd-kit:
+    devDependencies:
+      '@packages/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
