@@ -1,0 +1,14 @@
+{
+  "extends": "@packages/typescript-config/node.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": ".",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "outDir": "./dist",
+    "declaration": true,
+    "noEmit": false
+  },
+  "include": ["**/*.ts", "index.ts"],
+  "exclude": ["node_modules", "dist"]
+}
