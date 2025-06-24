@@ -12,7 +12,7 @@ export abstract class ValueObject<T> {
    * Creates a new ValueObject instance.
    * @param value The value to encapsulate.
    */
-  protected constructor(value: T) {
+  public constructor(value: T) {
     this._value = Object.freeze(value);
   }
 
