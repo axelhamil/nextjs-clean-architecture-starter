@@ -5,17 +5,21 @@ import { UUID } from "./UUID";
  * Interface for domain entities.
  * Entities are objects defined by their identity rather than their attributes.
  */
-export interface IEntity {
+export interface IEntity<T> {
   /**
    * Unique identifier of the entity.
    */
   readonly _id: UUID<string | number>;
   /**
+   * Properties of the entity.
+   */
+  readonly _props: T;
+  /**
    * Checks if another object is equal to this entity.
    * @param object The object to compare.
    * @returns True if the objects are equal, false otherwise.
    */
-  equals(object?: IEntity): boolean;
+  equals(object?: IEntity<T>): boolean;
   /**
    * Returns the properties of the entity.
    */
@@ -31,7 +35,7 @@ export interface IEntity {
  * @param v The value to check.
  * @returns True if the value is an entity, false otherwise.
  */
-function isEntity(v: unknown): v is IEntity {
+function isEntity(v: unknown): v is IEntity<unknown> {
   return v instanceof Entity;
 }
 
@@ -40,8 +44,8 @@ function isEntity(v: unknown): v is IEntity {
  * Entities are defined by their unique identity and encapsulate domain logic.
  * @template T The type of the entity's properties.
  */
-export abstract class Entity<T> implements IEntity {
-  protected readonly _props: T;
+export abstract class Entity<T> implements IEntity<T> {
+  public readonly _props: T;
   public readonly _id: UUID<string | number>;
 
   /**
@@ -59,7 +63,7 @@ export abstract class Entity<T> implements IEntity {
    * @param object The object to compare.
    * @returns True if the objects are equal, false otherwise.
    */
-  public equals(object?: IEntity): boolean {
+  public equals(object?: IEntity<T>): boolean {
     if (!object || this === object || !isEntity(object)) return false;
 
     return this._id.equals(object._id);

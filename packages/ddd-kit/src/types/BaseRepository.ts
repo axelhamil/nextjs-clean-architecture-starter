@@ -1,3 +1,4 @@
+import type { IEntity } from "@/core/Entity";
 import type { Option } from "@/core/Option";
 import type { Result } from "@/core/Result";
 
@@ -6,7 +7,7 @@ import type { Result } from "@/core/Result";
  * Repositories abstract the persistence layer for aggregates/entities.
  * @template T The type of entity managed by the repository.
  */
-export interface BaseRepository<T> {
+export interface BaseRepository<T extends IEntity<T>> {
   /**
    * Persists a new entity.
    * @param entity The entity to create.
@@ -24,7 +25,7 @@ export interface BaseRepository<T> {
    * @param entity The entity to delete.
    * @returns A Result indicating success or failure.
    */
-  delete(entity: T): Promise<Result<void>>;
+  delete(entity: T["_id"]): Promise<Result<void>>;
   /**
    * Finds an entity by its unique identifier.
    * @param id The unique identifier.
@@ -41,7 +42,7 @@ export interface BaseRepository<T> {
    * @param props Partial properties to match.
    * @returns An Option containing the entity or None.
    */
-  findBy(props: Partial<T>): Promise<Option<T>>;
+  findBy(props: Partial<T["_props"]>): Promise<Option<T>>;
   /**
    * Checks if an entity exists by its unique identifier.
    * @param id The unique identifier.
