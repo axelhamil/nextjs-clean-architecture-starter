@@ -7,7 +7,7 @@ import type { Result } from "@/core/Result";
  * Repositories abstract the persistence layer for aggregates/entities.
  * @template T The type of entity managed by the repository.
  */
-export interface BaseRepository<T extends IEntity<T>> {
+export interface BaseRepository<T extends IEntity<unknown>> {
   /**
    * Persists a new entity.
    * @param entity The entity to create.
