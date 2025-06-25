@@ -9,7 +9,10 @@
     "lint": "biome lint .",
     "check": "biome check .",
     "fix": "biome check --write .",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage"
   },
   "peerDependencies": {
     "@packages/libs": "workspace:*",
@@ -31,6 +34,7 @@
   },
   "devDependencies": {
     "@packages/typescript-config": "workspace:*",
+    "@packages/test": "workspace:*",
     "@types/node": "^24.0.3",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",

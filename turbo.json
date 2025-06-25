@@ -30,8 +30,16 @@
       "env": ["DATABASE_URL"]
     },
     "test": {
-      "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
+    "test:watch": {
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
+    "test:coverage": {
+      "outputs": ["coverage/**"],
+      "cache": false
     },
     "type-check": {
       "dependsOn": ["^db:generate"],

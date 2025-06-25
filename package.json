@@ -18,6 +18,8 @@
     "clean": "turbo clean && rm -rf node_modules",
     "type-check": "turbo type-check",
     "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "test:coverage": "turbo test:coverage",
     "prepare": "husky"
   },
   "devDependencies": {
