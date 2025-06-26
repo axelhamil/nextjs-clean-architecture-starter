@@ -13,44 +13,44 @@ export interface BaseRepository<T extends IEntity<unknown>> {
    * @param entity The entity to create.
    * @returns A Result indicating success or failure.
    */
-  create(entity: T): Promise<Result<void>>;
+  create(entity: T): Promise<Result<T>>;
   /**
    * Updates an existing entity.
    * @param entity The entity to update.
    * @returns A Result indicating success or failure.
    */
-  update(entity: T): Promise<Result<void>>;
+  update(entity: T): Promise<Result<T>>;
   /**
    * Deletes an entity.
    * @param entity The entity to delete.
    * @returns A Result indicating success or failure.
    */
-  delete(entity: T["_id"]): Promise<Result<void>>;
+  delete(entity: T["_id"]): Promise<Result<T["_id"]>>;
   /**
    * Finds an entity by its unique identifier.
    * @param id The unique identifier.
    * @returns An Option containing the entity or None.
    */
-  findById(id: string): Promise<Option<T>>;
+  findById(id: string): Promise<Result<Option<T>>>;
   /**
    * Finds all entities.
    * @returns An Option containing an array of entities or None.
    */
-  findAll(): Promise<Option<T[]>>;
+  findAll(): Promise<Result<T[]>>;
   /**
    * Finds an entity by matching properties.
    * @param props Partial properties to match.
    * @returns An Option containing the entity or None.
    */
-  findBy(props: Partial<T["_props"]>): Promise<Option<T>>;
+  findBy(props: Partial<T["_props"]>): Promise<Result<Option<T>>>;
   /**
    * Checks if an entity exists by its unique identifier.
    * @param id The unique identifier.
    * @returns True if the entity exists, false otherwise.
    */
-  exists(id: string): Promise<boolean>;
+  exists(id: string): Promise<Result<boolean>>;
   /**
    * Returns the total number of entities.
    */
-  count(): Promise<number>;
+  count(): Promise<Result<number>>;
 }
