@@ -1,6 +1,7 @@
-import type { IEntity } from "@/core/Entity";
-import type { Option } from "@/core/Option";
-import type { Result } from "@/core/Result";
+import type { Transaction } from "@packages/drizzle";
+import type { IEntity } from "../core/Entity";
+import type { Option } from "../core/Option";
+import type { Result } from "../core/Result";
 
 /**
  * Base interface for repositories in Domain-Driven Design.
@@ -13,19 +14,19 @@ export interface BaseRepository<T extends IEntity<unknown>> {
    * @param entity The entity to create.
    * @returns A Result indicating success or failure.
    */
-  create(entity: T): Promise<Result<T>>;
+  create(entity: T, trx?: Transaction): Promise<Result<T>>;
   /**
    * Updates an existing entity.
    * @param entity The entity to update.
    * @returns A Result indicating success or failure.
    */
-  update(entity: T): Promise<Result<T>>;
+  update(entity: T, trx?: Transaction): Promise<Result<T>>;
   /**
    * Deletes an entity.
    * @param entity The entity to delete.
    * @returns A Result indicating success or failure.
    */
-  delete(entity: T["_id"]): Promise<Result<T["_id"]>>;
+  delete(entity: T["_id"], trx?: Transaction): Promise<Result<T["_id"]>>;
   /**
    * Finds an entity by its unique identifier.
    * @param id The unique identifier.

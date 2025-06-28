@@ -15,12 +15,12 @@
     "test:coverage": "vitest run --coverage"
   },
   "peerDependencies": {
+    "@packages/drizzle": "workspace:*",
     "@packages/libs": "workspace:*",
     "react": "^19",
     "react-dom": "^19"
   },
   "dependencies": {
-    "@packages/drizzle": "workspace:*",
     "@packages/ddd-kit": "workspace:*",
     "@packages/ui": "workspace:*",
     "@evyweb/ioctopus": "^1.2.0",
