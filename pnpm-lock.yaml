@@ -83,6 +83,10 @@ importers:
         version: 5.8.3
 
   packages/ddd-kit:
+    dependencies:
+      '@packages/drizzle':
+        specifier: workspace:*
+        version: link:../drizzle
     devDependencies:
       '@packages/test':
         specifier: workspace:*
