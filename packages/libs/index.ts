@@ -1,5 +1,4 @@
-export * as remeda from "remeda";
-export { default as slugify } from "slugify";
+export * from "slugify";
 export { z } from "zod";
 
 export * from "./src/exceptions/DatabaseOperationError";

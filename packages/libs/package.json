@@ -13,7 +13,6 @@
     "dev": "tsc --watch "
   },
   "dependencies": {
-    "remeda": "^2.23.0",
     "slugify": "^1.6.6",
     "zod": "^3.25.67"
   },
