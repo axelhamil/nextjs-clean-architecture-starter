@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { StringStubs } from "./stubs/stringStubs-co";
+import { StringStubs } from "./stubs/stringStub-vo";
 
 describe("ValueObject", () => {
   describe("create()", () => {
