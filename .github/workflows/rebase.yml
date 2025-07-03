@@ -12,6 +12,8 @@ jobs:
     name: Rebase develop with main
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,6 +28,7 @@ jobs:
       - name: Rebase and push
         run: |
           if git show-ref --verify --quiet refs/remotes/origin/develop; then
+            git fetch origin develop
             git checkout develop
             git rebase origin/main
             git push origin develop --force-with-lease
