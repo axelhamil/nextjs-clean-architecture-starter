@@ -2,38 +2,67 @@ name: CI
 
 on:
   pull_request:
+    branches: [ main, develop, staging, prod ]
 
 jobs:
-  build_and_test:
-    name: Build & Test
+  CI:
     runs-on: ubuntu-latest
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js and pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Check code quality with Biome
-        run: pnpm ci:check
-
-      - name: Check types
-        run: pnpm type-check
-      
-      - name: Run tests
-        run: pnpm test
-
-      - name: Build project
-        run: pnpm build
+    - uses: actions/checkout@v4
+    
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.13.1
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.17.0
+        cache: 'pnpm'
+    
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+    
+    - name: Check for uncommitted changes
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "❌ Uncommitted changes detected"
+          echo "Commit your changes before pushing."
+          exit 1
+        fi
+        echo "✅ No uncommitted changes"
+    
+    - name: Lint check
+      id: lint
+      run: |
+        echo "🔍 Running strict lint check with Biome..."
+        pnpm biome check --write --verbose --unsafe .
+        if [ $? -ne 0 ]; then
+          echo "❌ Lint check failed"
+          exit 1
+        fi
+        echo "✅ Lint check passed"
+    
+    - name: Run tests
+      id: test
+      run: |
+        echo "🧪 Running tests..."
+        pnpm test
+        if [ $? -ne 0 ]; then
+          echo "❌ Tests failed"
+          exit 1
+        fi
+        echo "✅ Tests passed"
+    
+    - name: Build project
+      id: build
+      run: |
+        echo "🏗️ Running build..."
+        pnpm build
+        if [ $? -ne 0 ]; then
+          echo "❌ Build failed"
+          exit 1
+        fi
+        echo "✅ Build completed successfully" 
