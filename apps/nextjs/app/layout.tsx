@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from "react";
 import Providers from "../common/providers";
 import "./global.css";
 
+import { Analytics } from "@vercel/analytics/next";
 import "@packages/ui/globals.css";
 import { Toaster } from "@packages/ui/index";
 import { getLocale } from "next-intl/server";
@@ -25,6 +26,7 @@ export default async function RootLayout({
           <Toaster richColors position="top-right" />
         </Providers>
       </body>
+      <Analytics />
     </html>
   );
 }

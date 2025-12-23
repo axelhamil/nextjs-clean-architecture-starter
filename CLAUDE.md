@@ -78,28 +78,58 @@ This project implements **Clean Architecture** with **Domain-Driven Design** pat
 
 ```
 ┌─────────────────────────────────────────┐
-│         Adapters Layer                  │  Route handlers, controllers, presenters
-│         (apps/nextjs/src/adapters/)     │  Repository implementations
-├─────────────────────────────────────────┤
-│         Application Layer               │  Use cases, command/query handlers
-│         (apps/nextjs/src/application/)  │  Application-specific business rules
-├─────────────────────────────────────────┤
-│         Domain Layer                    │  Entities, value objects, aggregates
-│         (apps/nextjs/src/domain/)       │  Domain events, business rules
-│         Framework-independent           │  Pure business logic
-├─────────────────────────────────────────┤
-│         Infrastructure                  │  Database, external services
-│         (packages/drizzle)              │  ORM, transactions
+│ Domain                                  │
+│ - Entities                              │
+│ - Value Objects                         │
+│ - Aggregates                            │
+│ - Domain Events                         │
+│                                         │
+│ (depends on NOTHING)                    │
 └─────────────────────────────────────────┘
+               ▲
+               │ depends on
+┌─────────────────────────────────────────┐
+│ Application                             │
+│ - Use Cases                             │
+│ - Commands / Queries                    │
+│ - Application Services                  │
+│ - PORTS (interfaces):                   │
+│     • Repositories                      │
+│     • Gateways                          │
+│                                         │
+│ (depends on Domain)                     │
+└─────────────────────────────────────────┘
+               ▲
+               │ depends on
+┌─────────────────────────────────────────┐
+│ Interface Adapters                      │
+│ - Controllers                           │
+│ - Next.js Route Handlers                │
+│ - DTOs / Presenters                     │
+│                                         │
+│ (depends on Application)                │
+└─────────────────────────────────────────┘
+               ▲
+               │ depends on
+┌─────────────────────────────────────────┐
+│ Infrastructure                          │
+│ - ORM (Drizzle)                         │
+│ - Database                              │
+│ - External APIs                         │
+│ - Repository IMPLEMENTATIONS            │
+│                                         │
+│ (depends on Application ports)          │
+└─────────────────────────────────────────┘
+
 ```
 
 ### Request Flow
 
 ```
-HTTP Request → Route Handler → Controller → Use Case → Domain Logic → Repository → Database
-                    ↓              ↓            ↓           ↓            ↓
-                Validates      Gets DI      Returns    Enforces    Returns
-                  Input       instance     Result<T>  invariants  Result<Option<T>>
+HTTP Request → Route Handler → Controller → Use Case → Domain Logic → Repository PORT → Database
+                    ↓              ↓            ↓           ↓               ↓
+                Validates      Maps / Calls  Returns    Enforces        Returns
+                  Input        Use Case      Result<T>  invariants      Option<T>
 ```
 
 ### Dependency Injection
