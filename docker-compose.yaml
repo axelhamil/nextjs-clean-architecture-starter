@@ -8,10 +8,10 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ts-monorepo-boilerplate
+      POSTGRES_DB: nextjs-clean-architecture-starter
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - ts-monorepo-boilerplate_data:/var/lib/postgresql/data
+      - nextjs-clean-architecture-starter_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -21,8 +21,8 @@ services:
       - app-network
 
 volumes:
-  ts-monorepo-boilerplate_data:
-    name: ts-monorepo-boilerplate_data
+  nextjs-clean-architecture-starter_data:
+    name: nextjs-clean-architecture-starter_data
 
 networks:
   app-network:

@@ -11,11 +11,12 @@
     "test:coverage": "vitest run --coverage"
   },
   "peerDependencies": {
-    "@packages/drizzle": "workspace:*"
+    "@packages/drizzle": "workspace:*",
+    "zod": "4.2.1"
   },
   "devDependencies": {
     "@packages/typescript-config": "workspace:*",
     "@packages/test": "workspace:*",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   }
 }

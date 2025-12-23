@@ -1,5 +1,5 @@
 import { loadEnvConfig } from "@next/env";
-import { z } from "@packages/libs";
+import z from "zod";
 
 const projectDir = process.cwd();
 loadEnvConfig(projectDir);

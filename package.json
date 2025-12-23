@@ -1,5 +1,5 @@
 {
-  "name": "ts-monorepo-boilerplate",
+  "name": "nextjs-clean-architecture-starter",
   "private": true,
   "scripts": {
     "build": "turbo build",
@@ -23,12 +23,12 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.0.4",
+    "@biomejs/biome": "^2.3.10",
     "husky": "^9.1.7",
     "turbo": "latest"
   },
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@10.26.2",
   "engines": {
-    "node": ">=22.16.0"
+    "node": ">=24.12.0"
   }
 }
