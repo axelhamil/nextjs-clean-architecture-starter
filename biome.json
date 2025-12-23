@@ -121,6 +121,16 @@
       "enabled": true
     }
   },
+  "css": {
+    "parser": {
+      "cssModules": true,
+      "allowWrongLineComments": true,
+      "tailwindDirectives": true
+    },
+    "formatter": {
+      "enabled": true
+    }
+  },
   "vcs": {
     "enabled": true,
     "clientKind": "git",
