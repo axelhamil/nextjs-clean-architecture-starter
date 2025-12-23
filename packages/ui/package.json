@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "ui": "pnpm dlx shadcn@latest",
+    "type-check": "tsc --noEmit",
     "format": "biome format . --write",
     "lint": "biome lint .",
     "check": "biome check .",
@@ -12,8 +13,6 @@
   },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
-    "./postcss.config": "./postcss.config.mjs",
-    "./tailwind.config": "./tailwind.config.ts",
     "./libs/*": "./src/libs/*",
     "./hooks/*": [
       "./src/hooks/*.ts",
