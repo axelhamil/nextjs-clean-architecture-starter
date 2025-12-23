@@ -86,7 +86,6 @@ export function createErrorResponse(
   };
 }
 
-// Fonction utilitaire pour les erreurs de validation
 export function createValidationErrorResponse(
   validationErrors: Array<{
     field?: string;
@@ -101,7 +100,6 @@ export function createValidationErrorResponse(
   });
 }
 
-// Fonction utilitaire pour les erreurs non gérées (500)
 export function createInternalErrorResponse(
   error?: Error,
   exposeDetails = false,
