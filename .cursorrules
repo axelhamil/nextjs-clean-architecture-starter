@@ -1,0 +1,118 @@
+# Claude Code Rules for CleanStack
+
+## Architecture Principles
+
+### Clean Architecture
+- Follow Clean Architecture layers strictly: Domain → Application → Adapters → Infrastructure
+- Domain layer MUST be framework-independent (no Next.js, React, or external libs)
+- Dependencies flow inward: Infrastructure → Adapters → Application → Domain
+- Never import from outer layers into inner layers
+
+### Domain-Driven Design
+- Use Result<T> pattern instead of throwing exceptions in domain layer
+- Use Option<T> for nullable values instead of null/undefined
+- Keep business logic in domain entities and value objects
+- Aggregates manage consistency boundaries and domain events
+
+## Code Patterns
+
+### Use Cases
+- Implement `UseCase<Input, Output>` interface
+- Always return `Promise<Result<T>>`
+- Validate input before executing business logic
+- Handle errors explicitly with Result.fail()
+
+Example:
+```typescript
+export class CreateUserUseCase implements UseCase<CreateUserInput, User> {
+  async execute(input: CreateUserInput): Promise<Result<User>> {
+    // 1. Validate input
+    const emailOrError = Email.create(input.email);
+    if (emailOrError.isFailure) {
+      return Result.fail(emailOrError.getError());
+    }
+
+    // 2. Execute business logic
+    const user = User.create({ email: emailOrError.getValue() });
+
+    // 3. Return result
+    return Result.ok(user);
+  }
+}
+```
+
+### Value Objects
+- Extend `ValueObject<T>` from @packages/ddd-kit
+- Implement `validate()` method
+- Make immutable with Object.freeze()
+- Use Result<T> for validation errors
+
+Example:
+```typescript
+export class Email extends ValueObject<EmailProps> {
+  protected validate(props: EmailProps): Result<EmailProps> {
+    if (!emailRegex.test(props.value)) {
+      return Result.fail("Invalid email format");
+    }
+    return Result.ok(props);
+  }
+
+  get value(): string {
+    return this.props.value;
+  }
+}
+```
+
+### Entities & Aggregates
+- Extend `Entity<T>` or `Aggregate<T>` from @packages/ddd-kit
+- Use `UUID<string | number>` for identity
+- Keep business logic in domain
+- Use domain events for side effects
+
+## File Organization
+
+```
+apps/nextjs/src/
+  adapters/         # Controllers, presenters, repositories
+  application/      # Use cases, DTOs
+  domain/           # Entities, value objects, aggregates
+  infrastructure/   # Database, external APIs
+```
+
+## Anti-Patterns
+
+❌ **NEVER DO THIS:**
+- Throw exceptions in domain layer (use Result<T> instead)
+- Put business logic in controllers or presenters
+- Create anemic domain models (data bags without behavior)
+- Direct database access from use cases
+- Import React/Next.js in domain or application layers
+- Use null/undefined (use Option<T> instead)
+
+## Before Coding
+
+1. Read CLAUDE.md for full context
+2. Check existing patterns in @packages/ddd-kit
+3. Ensure you understand the layer boundaries
+4. Use Result<T> and Option<T> consistently
+
+## TypeScript Standards
+
+- Strict mode enabled
+- No `any` types (use `unknown` if necessary)
+- Explicit return types on functions
+- Use Zod for runtime validation at boundaries
+- Prefer `type` over `interface` unless extending
+
+## Testing
+
+- Use Vitest for all tests
+- Test domain logic in isolation (no mocks needed)
+- Test use cases with repository mocks
+- Test adapters with integration tests
+
+## Commands
+
+- `pnpm validate` - Full validation (type-check + lint + test)
+- `pnpm quick-check` - Fast check (type-check + lint)
+- `pnpm type-check` - TypeScript only

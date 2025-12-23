@@ -20,6 +20,9 @@
     "test": "turbo test",
     "test:watch": "turbo test:watch",
     "test:coverage": "turbo test:coverage",
+    "setup": "pnpm install && pnpm db && pnpm db:push",
+    "validate": "pnpm type-check && pnpm check && pnpm test",
+    "quick-check": "pnpm type-check && pnpm check",
     "prepare": "husky"
   },
   "devDependencies": {

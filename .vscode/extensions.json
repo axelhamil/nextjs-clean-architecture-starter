@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "ms-azuretools.vscode-docker",
+    "unifiedjs.vscode-mdx"
+  ]
+}

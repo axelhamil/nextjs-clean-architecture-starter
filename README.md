@@ -1,53 +1,110 @@
-# 🚀 Full-Stack Next.js Monorepo Boilerplate
+# 🏗️ CleanStack
 
-> A production-ready, full-stack monorepo boilerplate featuring Next.js, Drizzle ORM, and a modern TypeScript stack. It's designed to be a starting point for your own applications, with a focus on Developer Experience and best practices.
+> **Production-ready Next.js monorepo with Clean Architecture and Domain-Driven Design**
+
+A comprehensive starter template implementing Clean Architecture and DDD patterns. Built with Next.js 16, TypeScript, Turborepo, Drizzle ORM, and a complete DDD toolkit. Designed for scalable enterprise applications with AI-friendly codebase architecture.
+
+[![Next.js](https://img.shields.io/badge/Next.js_16-black?logo=next.js)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript_5.9-blue?logo=typescript)](https://typescriptlang.org)
+[![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
+
+**Built with Claude Code** | [Documentation](#-documentation) | [Features](#-features) | [Quick Start](#-quick-start)
 
 ## ✨ Features
 
-- **Monorepo Structure** powered by Turborepo and PNPM Workspaces
-- **Full-Stack Next.js 15** with App Router, Server Components, and Route Handlers
-- **Type Safety** across all packages and apps with shared TypeScript configurations
-- **Modern Development Tools** including Biome for linting and formatting
-- **Containerized Development** with Docker and Docker Compose
-- **Modern Styling** with Tailwind CSS 4 and shadcn/ui
-- **Type-Safe Database** with Drizzle ORM and PostgreSQL
-- **Dependency Injection** with a lightweight container
+### 🏛️ Architecture & Patterns
+- **Clean Architecture** - Separation of concerns with clear layer boundaries
+- **Domain-Driven Design** - Comprehensive DDD toolkit with Entities, Value Objects, Aggregates
+- **Result<T> Pattern** - Type-safe error handling without exceptions
+- **Option<T> Pattern** - Eliminate null/undefined with functional patterns
+- **Use Cases** - Encapsulated business logic following single responsibility
+- **Domain Events** - Event-driven architecture with type-safe handlers
+
+### ⚡ Technology Stack
+- **Next.js 16** - App Router, React Server Components, Server Actions
+- **TypeScript 5.9** - Strict mode with comprehensive type safety
+- **Turborepo** - High-performance build system for monorepos
+- **Drizzle ORM** - Type-safe SQL with PostgreSQL
+- **shadcn/ui** - Beautiful, accessible component system
+- **Tailwind CSS 4** - Modern utility-first CSS framework
+- **Biome** - Fast linter and formatter (replaces ESLint + Prettier)
+- **Vitest** - Lightning-fast unit testing
+- **PNPM** - Efficient package management
+
+### 🤖 AI-Friendly Development
+- **Claude Code Integration** - Optimized for AI-assisted development
+- **Comprehensive Documentation** - CLAUDE.md with full codebase context
+- **.cursorrules** - AI coding guidelines and patterns
+- **VS Code Configuration** - Pre-configured for optimal AI assistance
+- **Helper Scripts** - Generate Value Objects, Use Cases, and more
 
 ## 📦 Project Structure
 
 ```
-.
+cleanstack/
 ├── apps/
-│   └── nextjs/       # Full-Stack Next.js Application
+│   └── nextjs/              # Main Next.js application
+│       ├── app/             # App Router pages & layouts
+│       ├── common/          # DI container, translations, providers
+│       └── src/             # Clean Architecture layers
+│           ├── adapters/    # Controllers, presenters, repositories
+│           ├── application/ # Use cases & business logic
+│           ├── domain/      # Entities, value objects, aggregates
+│           └── infrastructure/ # Database, external APIs
 ├── packages/
-│   ├── drizzle/      # Database schema and migrations
-│   ├── libs/         # Shared utilities and types
-│   ├── ui/           # Shared UI components from shadcn/ui
-│   └── typescript-config/ # Shared TypeScript configurations
+│   ├── ddd-kit/         # DDD primitives (Entity, ValueObject, Aggregate, Result, Option)
+│   ├── drizzle/         # Database schema & migrations
+│   ├── ui/              # shadcn/ui components + brutalist design system
+│   └── test/            # Shared test utilities
 ```
 
-## 🛠️ Prerequisites
+### Clean Architecture Layers
 
-- Node.js (version 22.16.0 or later)
-- PNPM package manager (10.12.1 or later)
-- Docker and Docker Compose
-- PostgreSQL (via Docker)
+CleanStack follows Clean Architecture with strict dependency rules:
 
-## 🚀 Getting Started
+```
+Infrastructure → Adapters → Application → Domain
+     ↓              ↓           ↓
+   Database    Controllers   Use Cases   Entities & Value Objects
+   External    Presenters                Aggregates & Events
+   APIs        Repositories
+```
 
-```shell
-# Clone and install
-git clone <repository-url> && cd <repository-name>
+Dependencies flow **inward only**. The domain layer has zero external dependencies.
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js ≥ 24.12.0
+- PNPM 10.26.2
+- Docker & Docker Compose
+
+### Installation
+
+```bash
+# 1. Clone and install dependencies
+git clone https://github.com/axelhamil/nextjs-clean-architecture-starter cleanstack
+cd cleanstack
 pnpm install
 
-# Setup environment and database
+# 2. Setup database
 cp .env.example .env
 docker-compose up -d
 pnpm db:push
 
-# Start development
+# 3. Start development server
 pnpm dev
 ```
+
+Visit [http://localhost:3000](http://localhost:3000) to see your app.
+
+### First Steps
+
+1. **Read CLAUDE.md** - Comprehensive guide to the architecture
+2. **Check .cursorrules** - AI coding guidelines and patterns
+3. **Explore @packages/ddd-kit** - Learn the DDD primitives
+4. **Try helper scripts** - Generate Use Cases and Value Objects
 
 ### 🌐 Services
 
@@ -57,51 +114,122 @@ pnpm dev
 
 ## 🏗️ Development
 
-### Available Scripts
+### Available Commands
 
-```shell
-pnpm dev        # Start all applications in development mode
-pnpm build      # Build all applications and packages
-pnpm lint       # Lint all applications and packages using Biome
-pnpm format     # Format code using Biome
-pnpm db:push    # Push database schema changes
-pnpm db:generate # Generate database types and migrations
-pnpm db:migrate # Run database migrations
-pnpm db:studio  # Open Drizzle Studio
-pnpm clean      # Clean up build artifacts and node_modules
-pnpm type-check # Run TypeScript type checking
-pnpm test       # Run tests
+```bash
+# Development
+pnpm dev           # Start development server
+pnpm build         # Build for production
+pnpm start         # Start production server
+
+# Code Quality
+pnpm validate      # Full validation (type-check + lint + test)
+pnpm quick-check   # Fast check (type-check + lint)
+pnpm type-check    # TypeScript type checking
+pnpm check         # Biome lint & format check
+pnpm format        # Format code with Biome
+pnpm test          # Run all tests with Vitest
+
+# Database
+pnpm db            # Start PostgreSQL container
+pnpm db:push       # Push schema changes
+pnpm db:generate   # Generate migrations
+pnpm db:migrate    # Run migrations
+pnpm db:studio     # Open Drizzle Studio
+
+# Utilities
+pnpm clean         # Clean build artifacts
+pnpm ui:add        # Add shadcn/ui components
 ```
 
-## 📚 Tech Stack
+## 📚 Documentation
 
-### Main Stack
+### Essential Reading
 
-![Next.js](https://img.shields.io/badge/Next.js_15-black?style=flat-square&logo=next.js)
-![React](https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript_5.8-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
-![Drizzle](https://img.shields.io/badge/Drizzle_ORM-C5F74F?style=flat-square&logoColor=black)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![shadcn/ui](https://img.shields.io/badge/shadcn/ui-000000?style=flat-square)
-![Zod](https://img.shields.io/badge/Zod_3-3068B7?style=flat-square)
-![Nuqs](https://img.shields.io/badge/Nuqs_2-4353FF?style=flat-square)
+- **[CLAUDE.md](./CLAUDE.md)** - Complete architecture guide and codebase context
+- **.cursorrules** - AI coding guidelines and architectural patterns
+- **@packages/ddd-kit** - DDD primitives documentation
 
-### ⚡ Development
+### Key Concepts
 
-![Turborepo](https://img.shields.io/badge/Turborepo-000000?style=flat-square&logo=turborepo)
-![PNPM](https://img.shields.io/badge/PNPM_10-F69220?style=flat-square&logo=pnpm&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![Biome](https://img.shields.io/badge/Biome-60A5FA?style=flat-square&logo=biome&logoColor=white)
-![Husky](https://img.shields.io/badge/Husky-42B983?style=flat-square&logo=git&logoColor=white)
+#### Result<T> Pattern
+```typescript
+const emailOrError = Email.create("user@example.com");
+if (emailOrError.isFailure) {
+  return Result.fail(emailOrError.getError());
+}
+const email = emailOrError.getValue();
+```
 
-### 🔄 Utilities
+#### Value Objects
+```typescript
+export class Email extends ValueObject<EmailProps> {
+  protected validate(props: EmailProps): Result<EmailProps> {
+    if (!emailRegex.test(props.value)) {
+      return Result.fail("Invalid email");
+    }
+    return Result.ok(props);
+  }
+}
+```
 
-![Remeda](https://img.shields.io/badge/Remeda-2C5BB4?style=flat-square)
-![Slugify](https://img.shields.io/badge/Slugify-4C4A73?style=flat-square)
+#### Use Cases
+```typescript
+export class CreateUserUseCase implements UseCase<CreateUserInput, User> {
+  async execute(input: CreateUserInput): Promise<Result<User>> {
+    // Business logic here
+  }
+}
+```
+
+## 🤖 AI-Assisted Development
+
+CleanStack is optimized for AI coding assistants:
+
+### Claude Code / Cursor
+- **CLAUDE.md** provides complete codebase context
+- **.cursorrules** defines architectural patterns and anti-patterns
+- **Helper scripts** generate boilerplate code
+- **Comprehensive comments** in DDD primitives
+
+### Getting Started with AI
+1. Open CLAUDE.md in your AI assistant
+2. Ask it to read .cursorrules for coding guidelines
+3. Use helper scripts: `./scripts/create-use-case.sh MyUseCase`
+4. Follow Result<T> and Option<T> patterns consistently
+
+## 📖 Tech Stack
+
+![Next.js](https://img.shields.io/badge/Next.js_16-black?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript_5.9-blue?logo=typescript)
+![Turborepo](https://img.shields.io/badge/Turborepo-black?logo=turborepo)
+![Drizzle](https://img.shields.io/badge/Drizzle_ORM-green?logo=drizzle)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue?logo=postgresql)
+![Tailwind](https://img.shields.io/badge/Tailwind_4-cyan?logo=tailwind-css)
+![Biome](https://img.shields.io/badge/Biome-purple)
+
+## 🎯 When to Use CleanStack
+
+Perfect for:
+- **Enterprise applications** requiring maintainable architecture
+- **Scalable systems** with complex business logic
+- **Teams** wanting clear architectural boundaries
+- **AI-assisted development** with Claude Code or Cursor
+- **Long-term projects** where testability matters
+
+Not ideal for:
+- Simple CRUD apps or MVPs
+- Prototypes requiring rapid iteration
+- Projects with minimal business logic
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read CLAUDE.md to understand the architecture before submitting PRs.
 
 ## 📝 License
 
-MIT
+MIT © [AxelHamil](https://github.com/axelhamil)
 
-Created by [@axelhamil](https://github.com/axelhamil)
+---
+
+**Built with Claude Code** | Give it a ⭐ if you find it useful!
