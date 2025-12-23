@@ -108,6 +108,8 @@ export abstract class Aggregate<T> extends Entity<T> implements IAggregate {
    * @param events Array of domain events to add.
    */
   protected addEvents(events: DomainEvent[]): void {
-    events.forEach((event) => this.addEvent(event));
+    for (const event of events) {
+      this.addEvent(event);
+    }
   }
 }
