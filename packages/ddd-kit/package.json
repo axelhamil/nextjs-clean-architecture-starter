@@ -11,7 +11,7 @@
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@packages/drizzle": "workspace:*",
     "zod": "^4.2.1"
   },
