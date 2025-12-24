@@ -72,65 +72,588 @@ pnpm clean
 
 ## Architecture
 
-This project implements **Clean Architecture** with **Domain-Driven Design** patterns:
+This project implements **Clean Architecture** with **Domain-Driven Design** patterns.
+
+### Core Principle: Dependency Rule
+
+**All dependencies point INWARD toward the Domain**. The Domain is the core and has ZERO dependencies on outer layers.
 
 ### Layer Structure
 
 ```
 ┌─────────────────────────────────────────┐
-│ Domain                                  │
+│ Domain (Core)                           │
 │ - Entities                              │
 │ - Value Objects                         │
 │ - Aggregates                            │
 │ - Domain Events                         │
 │                                         │
-│ (depends on NOTHING)                    │
+│ DEPENDS ON: NOTHING                     │
 └─────────────────────────────────────────┘
                ▲
+               │
                │ depends on
+               │
 ┌─────────────────────────────────────────┐
 │ Application                             │
 │ - Use Cases                             │
 │ - Commands / Queries                    │
 │ - Application Services                  │
 │ - PORTS (interfaces):                   │
-│     • Repositories                      │
-│     • Gateways                          │
+│     • Repository interfaces             │
+│     • Gateway interfaces                │
 │                                         │
-│ (depends on Domain)                     │
+│ DEPENDS ON: Domain only                 │
 └─────────────────────────────────────────┘
                ▲
+               │
                │ depends on
+               │
 ┌─────────────────────────────────────────┐
 │ Interface Adapters                      │
 │ - Controllers                           │
 │ - Next.js Route Handlers                │
 │ - DTOs / Presenters                     │
+│ - Input validation (Zod)                │
 │                                         │
-│ (depends on Application)                │
+│ DEPENDS ON: Application + Domain        │
 └─────────────────────────────────────────┘
                ▲
+               │
                │ depends on
+               │
 ┌─────────────────────────────────────────┐
-│ Infrastructure                          │
+│ Infrastructure (Outermost)              │
 │ - ORM (Drizzle)                         │
 │ - Database                              │
 │ - External APIs                         │
 │ - Repository IMPLEMENTATIONS            │
+│ - DI Container configuration            │
 │                                         │
-│ (depends on Application ports)          │
+│ DEPENDS ON: Application ports           │
 └─────────────────────────────────────────┘
-
 ```
 
 ### Request Flow
 
 ```
-HTTP Request → Route Handler → Controller → Use Case → Domain Logic → Repository PORT → Database
-                    ↓              ↓            ↓           ↓               ↓
-                Validates      Maps / Calls  Returns    Enforces        Returns
-                  Input        Use Case      Result<T>  invariants      Option<T>
+HTTP Request
+    ↓
+Route Handler (adapters/in/api/)
+    ↓
+Controller validates input & maps to DTO
+    ↓
+Use Case (application/) - orchestrates business logic
+    ↓
+Domain Logic (domain/) - enforces business rules
+    ↓
+Repository PORT (application/ports/) - interface
+    ↓
+Repository IMPL (adapters/out/) - concrete implementation
+    ↓
+Database
+
+Return path: Database → Option<T> → Result<T> → DTO → JSON Response
 ```
+
+## AI Development Guidelines
+
+This section provides explicit patterns and rules for AI assistants working in this codebase. Following these guidelines ensures code quality and architectural consistency.
+
+### Mandatory Architectural Rules
+
+#### 1. Respect the Dependency Rule (CRITICAL)
+
+**NEVER violate the dependency direction**:
+
+- Domain MUST NOT import from Application, Adapters, or Infrastructure
+- Application MUST NOT import from Adapters or Infrastructure
+- Adapters MUST NOT import from Infrastructure
+- Infrastructure CAN import from Application (via ports/interfaces)
+
+**Example violations to AVOID**:
+```typescript
+// WRONG: Domain importing from Application
+import { SomeUseCase } from '@/application/...'  // in domain layer
+
+// WRONG: Application importing Infrastructure
+import { DrizzleUserRepository } from '@/adapters/out/...'  // in application layer
+
+// WRONG: Domain importing external libraries (except DDD-kit)
+import { db } from '@packages/drizzle'  // in domain layer
+```
+
+**Correct patterns**:
+```typescript
+// Domain: only imports from ddd-kit
+import { Entity, Result, UUID } from '@packages/ddd-kit'
+
+// Application: imports Domain + defines ports
+import { User } from '@/domain/...'
+import type { IUserRepository } from '@/application/ports/...'
+
+// Infrastructure: imports Application ports, implements them
+import type { IUserRepository } from '@/application/ports/...'
+export class DrizzleUserRepository implements IUserRepository { }
+```
+
+#### 2. Error Handling Pattern (MANDATORY)
+
+**NEVER throw exceptions** in Domain or Application layers. Use `Result<T, E>` pattern.
+
+```typescript
+// WRONG
+async execute(input: CreateUserInput): Promise<User> {
+  if (!input.email) {
+    throw new Error('Email is required')  // ❌ NEVER throw
+  }
+  const user = await this.repo.create(...)
+  return user
+}
+
+// CORRECT
+async execute(input: CreateUserInput): Promise<Result<User>> {
+  const emailOrError = Email.create(input.email)
+  if (emailOrError.isFailure) {
+    return Result.fail(emailOrError.error)  // ✅ Return Result
+  }
+
+  const userOrError = await this.repo.create(...)
+  if (userOrError.isFailure) {
+    return Result.fail(userOrError.error)
+  }
+
+  return Result.ok(userOrError.value)
+}
+```
+
+**Repository pattern** - always return `Result<Option<T>>` for single items:
+```typescript
+async findById(id: UUID): Promise<Result<Option<User>>> {
+  try {
+    const row = await db.select().where(eq(users.id, id.value))
+    if (!row) return Result.ok(None())  // ✅ None, not null
+    return Result.ok(Some(User.create(row)))
+  } catch (error) {
+    return Result.fail(new DatabaseOperationError(...))  // ✅ Never throw
+  }
+}
+```
+
+#### 3. Immutability Pattern (MANDATORY)
+
+**All Domain objects MUST be immutable**:
+
+```typescript
+// Value Objects: use Object.freeze()
+export class Email extends ValueObject<{ value: string }> {
+  private constructor(props: { value: string }) {
+    super(props)
+    Object.freeze(this)  // ✅ REQUIRED
+  }
+
+  static create(email: string): Result<Email> {
+    // validation logic
+    return Result.ok(new Email({ value: email }))
+  }
+
+  // ❌ NEVER add setters
+  // setValue(v: string) { this.props.value = v }  // WRONG
+}
+
+// Entities: private props, no setters
+export class User extends Entity<UserProps> {
+  private constructor(props: UserProps, id?: UUID) {
+    super(props, id)
+  }
+
+  // ✅ Return new instance for updates
+  updateEmail(email: Email): Result<User> {
+    const newProps = { ...this.props, email }
+    return Result.ok(new User(newProps, this.id))
+  }
+
+  // ❌ NEVER mutate
+  // setEmail(email: Email) { this.props.email = email }  // WRONG
+}
+```
+
+#### 4. Use Cases Pattern (MANDATORY)
+
+Every Use Case MUST:
+- Implement `UseCase<Input, Output>` interface
+- Return `Result<Output>`
+- Be registered in DI container
+- Have a single responsibility
+
+```typescript
+// ✅ CORRECT structure
+import { UseCase } from '@packages/ddd-kit'
+import type { IUserRepository } from '@/application/ports/IUserRepository'
+
+interface CreateUserInput {
+  email: string
+  name: string
+}
+
+export class CreateUserUseCase implements UseCase<CreateUserInput, User> {
+  constructor(private readonly userRepo: IUserRepository) {}
+
+  async execute(input: CreateUserInput): Promise<Result<User>> {
+    // 1. Validate input & create Value Objects
+    const emailOrError = Email.create(input.email)
+    if (emailOrError.isFailure) return Result.fail(emailOrError.error)
+
+    // 2. Create Domain Entity
+    const userOrError = User.create({
+      email: emailOrError.value,
+      name: input.name,
+    })
+    if (userOrError.isFailure) return Result.fail(userOrError.error)
+
+    // 3. Persist via Repository
+    const savedOrError = await this.userRepo.create(userOrError.value)
+    if (savedOrError.isFailure) return Result.fail(savedOrError.error)
+
+    // 4. Return Result
+    return Result.ok(savedOrError.value)
+  }
+}
+```
+
+#### 5. Repository Pattern (MANDATORY)
+
+Repositories MUST:
+- Be interfaces (ports) in Application layer
+- Be implemented in Infrastructure layer
+- Extend `BaseRepository<T>` from ddd-kit
+- Use `Option<T>` for single items
+- Support transactions via `trx` parameter
+
+```typescript
+// Application layer: application/ports/IUserRepository.ts
+import type { BaseRepository } from '@packages/ddd-kit'
+import type { User } from '@/domain/user/User'
+
+export interface IUserRepository extends BaseRepository<User> {
+  findByEmail(email: string): Promise<Result<Option<User>>>
+}
+
+// Infrastructure layer: adapters/out/persistence/DrizzleUserRepository.ts
+import type { IUserRepository } from '@/application/ports/IUserRepository'
+import type { Transaction } from 'drizzle-orm/node-postgres'
+import { db } from '@packages/drizzle'
+
+export class DrizzleUserRepository implements IUserRepository {
+  async findById(
+    id: UUID,
+    trx?: Transaction  // ✅ Always support transactions
+  ): Promise<Result<Option<User>>> {
+    const database = trx ?? db
+    try {
+      const row = await database.query.users.findFirst({
+        where: eq(users.id, id.value)
+      })
+      if (!row) return Result.ok(None())  // ✅ Use Option, not null
+
+      const userOrError = UserMapper.toDomain(row)
+      if (userOrError.isFailure) return Result.fail(userOrError.error)
+
+      return Result.ok(Some(userOrError.value))
+    } catch (error) {
+      return Result.fail(new DatabaseOperationError('Failed to find user'))
+    }
+  }
+
+  // Implement all BaseRepository methods...
+}
+```
+
+#### 6. Transaction Pattern (MANDATORY for multi-step operations)
+
+**Transaction management happens at the Controller/Route Handler level**, not in UseCases. This allows composing multiple UseCases in a single transaction.
+
+**Key Points:**
+- Controller retrieves `TransactionManager` via `getInjection`
+- Controller manages transaction lifecycle
+- UseCases receive optional `trx?: Transaction` parameter
+- This enables chaining multiple UseCases in one transaction
+
+✅ **CORRECT - Transaction managed in Controller:**
+
+```typescript
+// Route Handler / Controller
+import { getInjection } from '@/common/di/container'
+import type { Transaction } from 'drizzle-orm/node-postgres'
+
+export async function POST(request: Request) {
+  const txManager = getInjection('ITransactionManagerService')
+  const createUserUseCase = getInjection('CreateUserUseCase')
+  const sendWelcomeEmailUseCase = getInjection('SendWelcomeEmailUseCase')
+
+  const body = await request.json()
+
+  // Controller manages the transaction
+  const result = await txManager.execute(async (trx) => {
+    // Execute multiple UseCases in same transaction
+    const userResult = await createUserUseCase.execute(body, trx)
+    if (userResult.isFailure) return Result.fail(userResult.error)
+
+    const emailResult = await sendWelcomeEmailUseCase.execute(
+      { userId: userResult.value.id },
+      trx
+    )
+    if (emailResult.isFailure) return Result.fail(emailResult.error)
+
+    return Result.ok(userResult.value)
+  })
+  // Transaction auto-commits on success, auto-rolls back on failure
+
+  if (result.isFailure) {
+    return Response.json({ error: result.error }, { status: 400 })
+  }
+
+  return Response.json(result.value)
+}
+```
+
+✅ **CORRECT - UseCase accepts optional transaction:**
+
+```typescript
+// Use Case
+import type { Transaction } from 'drizzle-orm/node-postgres'
+
+export class CreateUserUseCase implements UseCase<CreateUserInput, User> {
+  constructor(
+    private readonly userRepo: IUserRepository
+  ) {}
+
+  // Transaction is passed as optional parameter
+  async execute(
+    input: CreateUserInput,
+    trx?: Transaction
+  ): Promise<Result<User>> {
+    const emailOrError = Email.create(input.email)
+    if (emailOrError.isFailure) return Result.fail(emailOrError.error)
+
+    const userOrError = User.create({
+      email: emailOrError.value,
+      name: input.name,
+    })
+    if (userOrError.isFailure) return Result.fail(userOrError.error)
+
+    // Pass transaction to repository
+    const savedOrError = await this.userRepo.create(userOrError.value, trx)
+    if (savedOrError.isFailure) return Result.fail(savedOrError.error)
+
+    return Result.ok(savedOrError.value)
+  }
+}
+```
+
+**Why this pattern?**
+- ✅ Compose multiple UseCases in one transaction
+- ✅ Controller has control over transaction boundaries
+- ✅ UseCases remain focused on business logic
+- ✅ Easy to test UseCases with or without transactions
+
+#### 7. Domain Events Pattern
+
+When using Domain Events:
+
+```typescript
+// 1. Define event in Domain layer
+export class UserCreatedEvent {
+  constructor(
+    public readonly userId: UUID,
+    public readonly email: string,
+    public readonly occurredAt: Date = new Date()
+  ) {}
+}
+
+// 2. Add event to Aggregate
+export class User extends Aggregate<UserProps> {
+  static create(props: CreateUserProps): Result<User> {
+    const user = new User(props)
+    user.addEvent(new UserCreatedEvent(user.id, user.email.value))  // ✅
+    return Result.ok(user)
+  }
+}
+
+// 3. Dispatch after persistence
+const userOrError = await this.userRepo.create(user)
+if (userOrError.isSuccess) {
+  user.markEventsForDispatch()
+  DomainEvents.dispatch(user.id)  // Fire events asynchronously
+}
+```
+
+#### 8. Dependency Injection Pattern (MANDATORY)
+
+All dependencies MUST be injected via the DI container:
+
+```typescript
+// ❌ WRONG: Direct instantiation
+const repo = new DrizzleUserRepository()
+const useCase = new CreateUserUseCase(repo)
+
+// ✅ CORRECT: DI Container
+// 1. Register in DI module (common/di/modules/user.module.ts)
+import { ApplicationContainer } from '@evyweb/ioctopus'
+
+export const userModule = (container: ApplicationContainer) => {
+  container.bind('IUserRepository').toClass(DrizzleUserRepository)
+  container.bind('CreateUserUseCase').toClass(CreateUserUseCase)
+}
+
+// 2. Use in controllers/route handlers
+import { getInjection } from '@/common/di/container'
+
+const useCase = getInjection('CreateUserUseCase')  // ✅ Type-safe
+```
+
+### Code Organization Rules
+
+#### File Structure Convention
+
+```
+apps/nextjs/src/
+├── domain/                        # Core business logic
+│   └── user/
+│       ├── User.ts                # Entity/Aggregate
+│       ├── Email.ts               # Value Object
+│       └── events/
+│           └── UserCreatedEvent.ts
+├── application/                   # Use cases & ports
+│   ├── use-cases/
+│   │   └── CreateUserUseCase.ts
+│   └── ports/                     # Interfaces only
+│       └── IUserRepository.ts
+├── adapters/
+│   ├── in/                        # Input adapters
+│   │   └── api/
+│   │       └── users/
+│   │           └── route.ts       # Next.js route handler
+│   └── out/                       # Output adapters
+│       └── persistence/
+│           ├── DrizzleUserRepository.ts
+│           └── mappers/
+│               └── UserMapper.ts  # Domain ↔ DB mapping
+└── shared/                        # Shared utilities
+    └── errors/
+```
+
+#### Naming Conventions
+
+- **Entities**: PascalCase, singular (e.g., `User`, `Order`)
+- **Value Objects**: PascalCase, descriptive (e.g., `Email`, `Money`, `Address`)
+- **Use Cases**: PascalCase + `UseCase` suffix (e.g., `CreateUserUseCase`)
+- **Repositories**: `I` prefix for interface, implementation name describes tech (e.g., `IUserRepository` → `DrizzleUserRepository`)
+- **DTOs**: PascalCase + `Dto` suffix (e.g., `CreateUserDto`)
+- **Events**: PascalCase + `Event` suffix, past tense (e.g., `UserCreatedEvent`)
+
+### Testing Patterns
+
+#### Unit Tests for Domain
+
+```typescript
+// Domain objects should be tested in isolation
+describe('Email Value Object', () => {
+  it('should create valid email', () => {
+    const result = Email.create('test@example.com')
+    expect(result.isSuccess).toBe(true)
+  })
+
+  it('should reject invalid email format', () => {
+    const result = Email.create('invalid')
+    expect(result.isFailure).toBe(true)
+  })
+})
+```
+
+#### Integration Tests for Use Cases
+
+```typescript
+// Use Cases tested with real or mock repositories
+describe('CreateUserUseCase', () => {
+  it('should create user successfully', async () => {
+    const mockRepo = createMockRepository()
+    const useCase = new CreateUserUseCase(mockRepo)
+
+    const result = await useCase.execute({
+      email: 'test@example.com',
+      name: 'Test User'
+    })
+
+    expect(result.isSuccess).toBe(true)
+  })
+})
+```
+
+### Common Anti-Patterns to AVOID
+
+#### ❌ Anemic Domain Model
+```typescript
+// WRONG: No business logic, just getters/setters
+class User {
+  constructor(public email: string, public name: string) {}
+  setEmail(e: string) { this.email = e }
+}
+```
+
+#### ❌ Fat Controllers
+```typescript
+// WRONG: Business logic in controller
+export async function POST(request: Request) {
+  const body = await request.json()
+  // ❌ Validation, business rules, persistence all in controller
+  if (!body.email.includes('@')) return Response.json({ error: 'Invalid' })
+  const user = { id: crypto.randomUUID(), ...body }
+  await db.insert(users).values(user)
+}
+```
+
+#### ❌ Direct Database Access from Domain
+```typescript
+// WRONG: Domain importing database
+import { db } from '@packages/drizzle'  // ❌ in domain layer
+
+class User extends Entity<UserProps> {
+  async save() {
+    await db.insert(users).values(this.toObject())  // ❌❌❌
+  }
+}
+```
+
+#### ❌ Null/Undefined instead of Option
+```typescript
+// WRONG
+async findById(id: UUID): Promise<User | null> {  // ❌
+  return await db.query.users.findFirst(...) ?? null
+}
+
+// CORRECT
+async findById(id: UUID): Promise<Result<Option<User>>> {  // ✅
+  const row = await db.query.users.findFirst(...)
+  if (!row) return Result.ok(None())
+  return Result.ok(Some(UserMapper.toDomain(row)))
+}
+```
+
+### Quick Reference Checklist
+
+When implementing a new feature, ask yourself:
+
+- [ ] Does my Domain layer have ZERO imports from outer layers?
+- [ ] Am I using `Result<T>` instead of throwing exceptions?
+- [ ] Are my Value Objects and Entities immutable?
+- [ ] Did I define repository interfaces in Application layer?
+- [ ] Are repository implementations in Infrastructure layer?
+- [ ] Am I using `Option<T>` instead of null/undefined?
+- [ ] Is my Use Case registered in the DI container?
+- [ ] Do multi-step operations use `TransactionService`?
+- [ ] Are my Domain Events dispatched AFTER persistence?
+- [ ] Did I write tests for my Domain logic?
 
 ### Dependency Injection
 
